@@ -1,0 +1,4 @@
+/consumer/target
+/producer/.vscode
+/producer/target
+/producer/src/main/resources/application.properties

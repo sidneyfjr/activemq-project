@@ -1,0 +1,16 @@
+# Configuração do banco de dados
+spring.datasource.url=
+spring.datasource.username=
+spring.datasource.password=
+spring.datasource.driver-class-name=
+
+spring.datasource.hikari.maximum-pool-size=
+spring.datasource.hikari.minimum-idle=
+
+spring.jpa.show-sql=
+spring.jpa.properties.hibernate.format_sql=
+spring.jpa.properties.hibernate.dialect=
+spring.jpa.properties.hibernate.default_schema=
+
+
+
