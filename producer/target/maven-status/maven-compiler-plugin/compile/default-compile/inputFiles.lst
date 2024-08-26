@@ -1,0 +1,6 @@
+/app/src/main/java/com/example/producer/db/OracleConnectionManager.java
+/app/src/main/java/com/example/producer/repository/UsuarioSSORepository.java
+/app/src/main/java/com/example/producer/MessageProducerApp.java
+/app/src/main/java/com/example/producer/entity/UsuarioSSO.java
+/app/src/main/java/com/example/producer/Application.java
+/app/src/main/java/com/example/producer/service/DataFetcher.java

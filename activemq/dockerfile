@@ -1,0 +1,27 @@
+# Use uma imagem base do Debian com OpenJDK
+FROM openjdk:8-jre-slim
+
+# Defina a versão do ActiveMQ que você deseja usar
+ENV ACTIVEMQ_VERSION 5.15.4
+
+# Instale wget e outras dependências
+RUN apt-get update && apt-get install -y wget
+
+# Instale o ActiveMQ
+RUN wget https://archive.apache.org/dist/activemq/${ACTIVEMQ_VERSION}/apache-activemq-${ACTIVEMQ_VERSION}-bin.tar.gz \
+    && tar xzf apache-activemq-${ACTIVEMQ_VERSION}-bin.tar.gz -C /opt \
+    && mv /opt/apache-activemq-${ACTIVEMQ_VERSION} /opt/activemq \
+    && rm apache-activemq-${ACTIVEMQ_VERSION}-bin.tar.gz
+
+# Exponha a porta 8161 para o console web
+EXPOSE 8161
+
+# Exponha as portas 61616 e 61613 para mensagens
+EXPOSE 61641
+EXPOSE 61642
+
+# Defina o diretório de trabalho
+WORKDIR /opt/activemq
+
+# Comando de inicialização do ActiveMQ
+CMD ["/opt/activemq/bin/activemq", "console"]
