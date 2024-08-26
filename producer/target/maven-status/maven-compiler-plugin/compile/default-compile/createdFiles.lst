@@ -1,5 +1,0 @@
-com/example/producer/MessageProducerApp.class
-com/example/producer/service/DataFetcher.class
-com/example/producer/entity/UsuarioSSO.class
-com/example/producer/Application.class
-com/example/producer/repository/UsuarioSSORepository.class
