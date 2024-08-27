@@ -87,9 +87,15 @@ public class UsuarioSSO {
         return sensibilizado;
     }
 
+    public void setSensibilizado(Integer sensibilizado) {
+        this.sensibilizado = sensibilizado;
+    }
+
     public Long getSeloId() {
         return seloId;
     }
+
+
 
 
 }

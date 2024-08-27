@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.ArrayList;
 
 public class MessageConsumerApp {
 
@@ -21,32 +22,26 @@ public class MessageConsumerApp {
         
         try {
 
-            // Cria uma conexão com o ActiveMQ
             ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory("tcp://activemq:61616");
             Connection connection             = factory.createConnection();
             connection.start();
 
-            // Cria uma sessão sem transações
-            Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+            Session         session       = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+            Destination     destination   = session.createQueue("TEST.FOO");
+            MessageConsumer consumer      = session.createConsumer(destination);
+            TextMessage     message       = (TextMessage) consumer.receive();
+            String          jsonMessage   = ((TextMessage) message).getText();
 
-            // Define a fila de destino
-            Destination destination = session.createQueue("TEST.FOO");
-
-            // Cria um consumidor de mensagens
-            MessageConsumer consumer = session.createConsumer(destination);
-
-            // Recebe a mensagem
-            TextMessage message = (TextMessage) consumer.receive();
-            String jsonMessage = ((TextMessage) message).getText();
-
-            ObjectMapper objectMapper           = new ObjectMapper();
-            List<Map<String, Object>> usuarios  = objectMapper.readValue(jsonMessage, new TypeReference<List<Map<String, Object>>>() {});
+            ObjectMapper    usuariosMapper      = new ObjectMapper();
+            List<Map<String, Object>> usuarios  = usuariosMapper.readValue(jsonMessage, new TypeReference<List<Map<String, Object>>>() {});  
+            List<Map<String, Object>> rows      = new ArrayList<>();
             int resposta;
 
             for (Map<String, Object> usuario : usuarios) {
-
-                String  cpf       = usuario.get("USUARIO").toString();
-                Integer usuarioId = (Integer) usuario.get("USUARIO_SSO_ID");
+                
+                String  cpf             = usuario.get("USUARIO").toString();
+                Integer usuarioId       = (Integer) usuario.get("USUARIO_SSO_ID");
+                Map<String, Object> row = new HashMap<>();
 
                 System.out.println("Usuário: " + cpf);
 
@@ -55,9 +50,21 @@ public class MessageConsumerApp {
                 } else {
                     resposta    =   2;
                 }
-                
-                sendResponseMessage(session, usuarioId, cpf, resposta);
+
+                row.put("USUARIO_SSO_ID", usuarioId);
+                row.put("USUARIO", cpf);
+                row.put("RESPOSTA", resposta);
+
+                rows.add(row);
+
             }
+            
+            ObjectMapper rowsMapper     = new ObjectMapper();
+            String       responseJson   = "";
+
+            responseJson = rowsMapper.writeValueAsString(rows);
+
+            sendResponseMessage2(session, responseJson);
 
             System.out.println("Mensagem recebida: " + message.getText());
 
@@ -74,21 +81,12 @@ public class MessageConsumerApp {
         return cpf != null && !cpf.equals("63717672088");
     }
 
-    private static void sendResponseMessage(Session session, Integer usuarioId, String cpf, int resposta) throws JMSException {
+    private static void sendResponseMessage2(Session session, String usuarios) throws JMSException {
 
-        Queue           responseQueue       = session.createQueue("RESPONSE.FOO");
-        MessageProducer producer            = session.createProducer(responseQueue);
-        String          responseJson        = "";
+        Queue           responseQueue   = session.createQueue("RESPONSE.FOO");
+        MessageProducer producer        = session.createProducer(responseQueue);        
+        TextMessage     responseMsg     = session.createTextMessage(usuarios);
 
-        // String responseJson = String.format("{\"USUARIO_SSO_ID\": %d, \"USUARIO\": \"%s\", \"RESPOSTA\": %d}", usuarioId, cpf, resposta);
-        
-        try {
-            responseJson = createResponseJson(usuarioId, cpf, resposta);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        TextMessage responseMsg = session.createTextMessage(responseJson);
         producer.send(responseMsg);
 
         System.out.println("Sent response message: " + responseMsg.getText());
@@ -97,18 +95,5 @@ public class MessageConsumerApp {
 
     }
 
-    private static String createResponseJson(Integer usuarioId, String cpf, int resposta) throws Exception {
-
-        Map<String, Object> responseMap = new HashMap<>();
-
-        responseMap.put("USUARIO_SSO_ID", usuarioId);
-        responseMap.put("USUARIO", cpf);
-        responseMap.put("RESPOSTA", resposta);
-
-        ObjectMapper objectMapper = new ObjectMapper();
-
-        return objectMapper.writeValueAsString(responseMap);
-
-    }
 
 }

@@ -20,7 +20,7 @@ public class DataFetcher {
 
     public String fetchData() {
 
-        List<UsuarioSSO> usuarios = usuarioSSORepository.findAll();
+        List<UsuarioSSO> usuarios = usuarioSSORepository.findBySensibilizado(0);
         //StringBuilder data = new StringBuilder();            
         List<Map<String, Object>> rows         = new ArrayList<>();
         ObjectMapper              objectMapper = new ObjectMapper();
@@ -29,7 +29,10 @@ public class DataFetcher {
         try {
 
             for (UsuarioSSO usuario : usuarios) {
-                //   data.append(usuario.getNome()).append(";");
+
+                     usuario.setSensibilizado(1);
+                     usuarioSSORepository.save(usuario);
+
                      Map<String, Object> row = new HashMap<>();
                      row.put("USUARIO_SSO_ID", usuario.getId());
                      row.put("UUID", usuario.getUuid());
@@ -40,7 +43,8 @@ public class DataFetcher {
                      row.put("EMAIL", usuario.getEmail());
                      row.put("SENSIBILIZADO", usuario.getSensibilizado());
                      row.put("SELO_ID", usuario.getSeloId());
-                     rows.add(row);           
+                     rows.add(row);    
+
                }
        
                jsonData = objectMapper.writeValueAsString(rows);
@@ -49,7 +53,6 @@ public class DataFetcher {
             e.printStackTrace();
         }
 
-        // return data.toString();
         return jsonData;
     }
 }
