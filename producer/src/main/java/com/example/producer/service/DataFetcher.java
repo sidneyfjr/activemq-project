@@ -21,7 +21,6 @@ public class DataFetcher {
     public String fetchData() {
 
         List<UsuarioSSO> usuarios = usuarioSSORepository.findBySensibilizado(0);
-        //StringBuilder data = new StringBuilder();            
         List<Map<String, Object>> rows         = new ArrayList<>();
         ObjectMapper              objectMapper = new ObjectMapper();
         String                    jsonData     = "";

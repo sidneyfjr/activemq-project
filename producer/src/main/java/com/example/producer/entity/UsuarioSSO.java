@@ -13,13 +13,13 @@ public class UsuarioSSO {
 
     @Id
     @Column(name = "USUARIO_SSO_ID")
-    private Long id;
+    private Integer id;
 
     @Column(name = "UUID")
     private String uuid;
 
     @Column(name = "PESSOA_ID")
-    private Long pessoaId;
+    private Integer pessoaId;
 
     @Column(name = "NOME")
     private String nome;
@@ -37,7 +37,7 @@ public class UsuarioSSO {
     private Integer sensibilizado;
 
     @Column(name = "SELO_ID")
-    private Long seloId;
+    private Integer seloId;
 
     @Column(name = "USUARIO_ATIVO_SSO")
     private Boolean usuarioAtivoSso;
@@ -57,30 +57,60 @@ public class UsuarioSSO {
     @Column(name = "DT_ALTERACAO")
     private LocalDateTime dtAlteracao;
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
     public String getUuid() {
         return uuid;
     }
-    public Long getPessoaId() {
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
+
+    public Integer getPessoaId() {
         return pessoaId;
+    }
+
+    public void setPessoaId(Integer pessoaId) {
+        this.pessoaId = pessoaId;
     }
 
     public String getNome() {
         return nome;
     }
 
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
     public String getUsuario() {
         return usuario;
+    }
+
+    public void setUsuario(String usuario) {
+        this.usuario = usuario;
     }
 
     public String getNomeCompleto() {
         return nomeCompleto;
     }
 
+    public void setNomeCompleto(String nomeCompleto) {
+        this.nomeCompleto = nomeCompleto;
+    }
+
     public String getEmail() {
         return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public Integer getSensibilizado() {
@@ -91,8 +121,12 @@ public class UsuarioSSO {
         this.sensibilizado = sensibilizado;
     }
 
-    public Long getSeloId() {
+    public Integer getSeloId() {
         return seloId;
+    }
+
+    public void setSeloId(Integer seloId) {
+        this.seloId = seloId;
     }
 
 
