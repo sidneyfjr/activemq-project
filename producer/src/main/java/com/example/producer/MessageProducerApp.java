@@ -1,9 +1,10 @@
 package com.example.producer;
 
 import com.example.producer.service.DataFetcher;
-import com.example.producer.service.MessageSenderService;
-import com.example.producer.service.MessageReceiveService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.producer.service.message.SendMessageService;
+import com.example.producer.service.message.MessageReceivedService;
+import com.example.producer.service.SaveUser;
+import com.example.producer.service.HaveDataToSend;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
@@ -11,27 +12,35 @@ import org.springframework.stereotype.Component;
 public class MessageProducerApp implements CommandLineRunner {
 
     private final DataFetcher dataFetcher;
-    private final MessageSenderService messageSenderService;
-    private final MessageReceiveService messageReceiveService;
+    private final SendMessageService sendMessageService;
+    private final MessageReceivedService messageReceivedService;
+    private final SaveUser saveUser;
 
-    @Autowired
     public MessageProducerApp(
             DataFetcher dataFetcher, 
-            MessageSenderService messageSenderService, 
-            MessageReceiveService messageReceiveService) {
+            SendMessageService  sendMessageService, 
+            MessageReceivedService messageReceivedService,
+            SaveUser saveUser
+            ) {
 
         this.dataFetcher            = dataFetcher;
-        this.messageSenderService   = messageSenderService;
-        this.messageReceiveService  = messageReceiveService;
+        this.sendMessageService     = sendMessageService;
+        this.messageReceivedService = messageReceivedService; 
+        this.saveUser               = saveUser; 
 
     }
 
     @Override
     public void run(String... args) {
         try {
-            String data = dataFetcher.fetchData();
-            messageSenderService.sendMessage(data);
-            messageReceiveService.receiveMessage();
+            String  data = dataFetcher.fetchData();
+            Boolean send = HaveDataToSend.send(data);
+            if (send) {
+                sendMessageService.sendMessage(data);
+                String messageReceived = messageReceivedService.messageReceived();
+                saveUser.saveUser(messageReceived);
+                
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

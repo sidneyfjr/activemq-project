@@ -129,7 +129,4 @@ public class UsuarioSSO {
         this.seloId = seloId;
     }
 
-
-
-
 }

@@ -1,49 +1,51 @@
-package com.example.producer.service;
+package com.example.producer.service.message;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.springframework.stereotype.Service;
 import javax.jms.Connection;
 import javax.jms.JMSException;
-import javax.jms.MessageProducer;
+import javax.jms.Destination;
+import javax.jms.MessageConsumer;
 import javax.jms.Queue;
 import javax.jms.Session;
 import javax.jms.TextMessage;
 
 @Service
-public class MessageSenderService {
+public class MessageReceivedService {
 
     private final String brokerUrl = "tcp://activemq:61616";
-    private final String queueName = "TEST.FOO";
+    private final String queueName = "RESPONSE.FOO";
 
-    public void sendMessage(String data) throws JMSException {
-
-        if (data == null || data.isEmpty() || "[]".equals(data.trim())) {
-             System.out.println("Sem dados para enviar!");
-            return;
-        }
+    public String messageReceived() throws JMSException {
 
         ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory(brokerUrl);
-        Connection      connection  = null;
+        Connection      connection  = null; 
         Session         session     = null;
-        MessageProducer producer    = null;
+        Destination     destination = null;
+        MessageConsumer consumer    = null;
 
         try {
 
-            connection = factory.createConnection();
+            connection  = factory.createConnection();
             connection.start();
 
             session     = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-            Queue queue = session.createQueue(queueName);
-            producer    = session.createProducer(queue);
-            TextMessage message = session.createTextMessage(data);
-            producer.send(message);
-            System.out.println("Sent message: " + message.getText());
+            destination = session.createQueue(queueName);
+            consumer    = session.createConsumer(destination);
 
+            TextMessage message     = (TextMessage) consumer.receive();
+            String      jsonMessage = ((TextMessage) message).getText();
+
+            return jsonMessage;
+              
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
         } finally {
-          
-            if (producer != null) {
+
+            if (consumer != null) {
                 try {
-                    producer.close();
+                    consumer.close();
                 } catch (JMSException e) {
                     e.printStackTrace();
                 }
