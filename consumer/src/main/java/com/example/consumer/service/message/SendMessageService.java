@@ -8,6 +8,7 @@ import javax.jms.Queue;
 import javax.jms.Session;
 import javax.jms.TextMessage;
 
+
 public class SendMessageService {
 
     private final String brokerUrl = "tcp://activemq:61616";

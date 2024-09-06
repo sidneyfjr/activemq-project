@@ -32,17 +32,19 @@ public class MessageProducerApp implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        try {
-            String  data = dataFetcher.fetchData();
-            Boolean send = HaveDataToSend.send(data);
-            if (send) {
-                sendMessageService.sendMessage(data);
-                String messageReceived = messageReceivedService.messageReceived();
-                saveUser.saveUser(messageReceived);
-                
+        while (true) {
+            try {
+                String  data = dataFetcher.fetchData();
+                Boolean send = HaveDataToSend.send(data);
+                if (send) {
+                    sendMessageService.sendMessage(data);
+                    String messageReceived = messageReceivedService.messageReceived();
+                    saveUser.saveUser(messageReceived);
+                }
+                Thread.sleep(10000);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 }

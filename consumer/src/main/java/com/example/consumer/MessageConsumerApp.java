@@ -18,15 +18,18 @@ public class MessageConsumerApp {
     }
 
     public void run() {
-        MessageReceivedService messageReceivedService = new MessageReceivedService(); 
-        SendUser               usuario                = new SendUser(); 
-        SendMessageService     sendMessageService     = new SendMessageService();
-        try {
-            String messageReceived  = messageReceivedService.messageReceived();
-            String sendMessage      = usuario.sendUser(messageReceived);            
-            sendMessageService.sendMessage(sendMessage);
-        } catch (Exception e) {
-            e.printStackTrace();
+        while (true) {
+            MessageReceivedService messageReceivedService = new MessageReceivedService(); 
+            SendUser               usuario                = new SendUser(); 
+            SendMessageService     sendMessageService     = new SendMessageService();
+            try {
+                String messageReceived  = messageReceivedService.messageReceived();
+                String sendMessage      = usuario.sendUser(messageReceived);            
+                sendMessageService.sendMessage(sendMessage);
+                Thread.sleep(10000);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
